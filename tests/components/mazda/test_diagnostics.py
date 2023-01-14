@@ -3,7 +3,7 @@
 import json
 
 import pytest
-
+ from homeassistant.components.mazda.diagnostics import async_get_device_diagnostics
 from homeassistant.components.mazda.const import DATA_COORDINATOR, DOMAIN
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
@@ -73,3 +73,16 @@ async def test_device_diagnostics_vehicle_not_found(hass: HomeAssistant, hass_cl
 
     with pytest.raises(AssertionError):
         await get_diagnostics_for_device(hass, hass_client, config_entry, reg_device)
+  
+ async def test_async_get_device_diagnostics(hass, config_entry, device):
+    """Teste com vin válido e target_vehicle contendo informações confidenciais."""
+    device.identifiers = {("vin", "FGA000000000000000")}
+    coordinator = hass.data[DOMAIN][config_entry.entry_id][DATA_COORDINATOR]
+    vehicle_data = coordinator.data[0]
+    vehicle_data["secret_info"] = "my_secret"
+
+    diagnostics_data = await async_get_device_diagnostics(hass, config_entry, device)
+    assert diagnostics_data == {
+        "info": {"secret_info": "REDACTED"},
+        "data": {"vin": "FGA000000000000000", "secret_info": "REDACTED"},
+    }
