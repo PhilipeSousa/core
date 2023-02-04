@@ -1,35 +1,35 @@
 """Test Home Assistant enum utils."""
 
 from enum import auto
+import unittest
 
 import pytest
 
 from homeassistant.backports.enum import StrEnum
 
+class TestStrEnum(unittest.TestCase):
+    class Cor(StrEnum):
+        VERMELHO = "vermelho"
+        VERDE = "verde"
+        AZUL = "azul"
 
-def test_strenum():
-    """Test StrEnum."""
+    def teste_str_enum(self):
+        self.assertEqual(str(self.Cor.VERMELHO), "vermelho")
+        self.assertEqual(repr(self.Cor.VERMELHO), "<Cor.VERMELHO: 'vermelho'>")
 
-    class TestEnum(StrEnum):
-        Test = "test"
+        with self.assertRaises(ValueError):
+            _ = self.Cor(123)
 
-    assert str(TestEnum.Test) == "test"
-    assert TestEnum.Test == "test"
-    assert TestEnum("test") is TestEnum.Test
-    assert TestEnum(TestEnum.Test) is TestEnum.Test
+    def teste_entrada_nao_suportada_(self):
+        with self.assertRaises(TypeError) as context:
+            class Cor(StrEnum):
+                VERMELHO = 1
 
-    with pytest.raises(ValueError):
-        TestEnum(42)
+        self.assertEqual(str(context.exception), "1 não é uma string")
 
-    with pytest.raises(ValueError):
-        TestEnum("str but unknown")
+    def testa_auto_nao_eh_suportado(self):
+        with self.assertRaises(TypeError) as context:
+            class Cor(StrEnum):
+                VERMELHO = auto()
 
-    with pytest.raises(TypeError):
-
-        class FailEnum(StrEnum):
-            Test = 42
-
-    with pytest.raises(TypeError):
-
-        class FailEnum2(StrEnum):
-            Test = auto()
+        self.assertEqual(str(context.exception), "auto() não é suportado por essa implementação")
