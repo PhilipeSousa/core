@@ -26,3 +26,4 @@ of a component, check the `Home Assistant help section <https://home-assistant.i
    :target: https://home-assistant.io/demo/
 .. |screenshot-integrations| image:: https://raw.githubusercontent.com/home-assistant/core/dev/docs/screenshot-integrations.png
    :target: https://home-assistant.io/integrations/
+.
